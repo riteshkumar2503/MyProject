@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from api_basic.views import article_list_view, modify_article_list_view, ArticleListApiView, ModifyArticleListApiView, ArticleListGenericApiView
+from api_basic.views import function_based_view, function_based_view2, ClassBasedView, ClassBasedView2, GenericView
 from django.urls import path
 
 
@@ -7,14 +7,13 @@ from django.urls import path
 app_name = 'api_basic_app123'
 
 urlpatterns = [
-    # url(r'^article/$', article_list_view, name='article_list_view_pattern_name'),
-     path('articlefbv/', article_list_view, name='article_list_view_pattern_name'),
-    path('articlecbv/', ArticleListApiView.as_view()),
-    path('articlegenericview/', ArticleListGenericApiView.as_view()),
+    path('articlefbv/', function_based_view, name='function_based_view_pattern_name'),
+    # url(r'^modify/(?P<pkxyz>[0-9]+)/$', function_based_view2, name='function_based_view2_pattern_name'),  In earlier versions of Django, you had to use the url() method and pass a regular expressions with named capturing groups to capture URL parameters.     # In Django 2.0, you use the path() method with path converters to capture URL parameters.
+    path(r'articlefbv2/<int:pkxyz>/', function_based_view2, name='function_based_view2_pattern_name'),
 
-    # In earlier versions of Django, you had to use the url() method and pass a regular expressions with named capturing groups to capture URL parameters.     # In Django 2.0, you use the path() method with path converters to capture URL parameters.
-    # url(r'^modify/(?P<pkxyz>[0-9]+)/$', modify_article_list_view, name='modify_article_list_view_pattern_name'),
-    # path(r'modify/<int:pkxyz>/', modify_article_list_view, name='modify_article_list_view_pattern_name'),
-    path(r'modify/<int:pkxyz>/', ModifyArticleListApiView.as_view(), name='modify_article_list_view_pattern_name'),
+    path('articlecbv/', ClassBasedView.as_view()),
+    path(r'articlecbv2/<int:pkxyz>/', ClassBasedView2.as_view(), name='class_based_view2_pattern_name'),
+
+    path(r'articlegenericview/<int:id>/', GenericView.as_view(), name='generic_view_pattern_name'),
 
 ]

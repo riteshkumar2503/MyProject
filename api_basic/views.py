@@ -17,7 +17,7 @@ from rest_framework import status
 # FUNCTION BASED VIEW **************************************************************************
 # @csrf_exempt  # Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as csrf_exempt. This isn't something that you'd normally want to do
 @api_view(['GET', 'POST'])
-def article_list_view(request):
+def function_based_view(request):
     if request.method == 'GET':
         all_articles = ArticleModel1.objects.all()
         articles_list_via_seri = ArticleSerializer(all_articles, many=True)
@@ -41,7 +41,7 @@ def article_list_view(request):
 
 # @csrf_exempt
 @api_view(['GET', 'PUT', 'DELETE'])
-def modify_article_list_view(request, pkxyz):
+def function_based_view2(request, pkxyz):
     try:
         one_article = ArticleModel1.objects.get(pk=pkxyz)
         print("eee", one_article)
@@ -80,7 +80,7 @@ def modify_article_list_view(request, pkxyz):
 from rest_framework.views import APIView
 
 
-class ArticleListApiView(APIView):
+class ClassBasedView(APIView):
     def get(self, request):
         all_articles = ArticleModel1.objects.all()
         articles_list_via_seri = ArticleSerializer(all_articles, many=True)
@@ -95,7 +95,7 @@ class ArticleListApiView(APIView):
             return Response(postdata_via_seri.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ModifyArticleListApiView(APIView):
+class ClassBasedView2(APIView):
     def get_one_object(self, pkxyz):
         try:
             print("wwwwww")
@@ -132,15 +132,31 @@ from rest_framework import generics
 from rest_framework import mixins
 
 
-class ArticleListGenericApiView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
+class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
     queryset = ArticleModel1.objects.all()
     serializer_class = ArticleSerializer
+    lookup_field = 'id'
 
-    def get(self, request):
-        return self.list(request)
+    def get(self, request, id=None):
+        print ("generic view gett", id)
+        if id:
+            return self.retrieve(request)
+        else:
+            print ("generic view getttttt", id)
+            return self.list(request)
 
-    def post(self, request):
+    def post(self, request, id):
+        print ("generic view postt")
         return self.create(request)
+
+    def put(self, request, id):
+        print ("generic view putt", id)
+        return self.update(request, id)
+
+    def delete(self, request, id):
+        print ("generic view deletee", id)
+        return self.destroy(request, id)
+
 
 
 
