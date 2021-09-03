@@ -12,6 +12,12 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+
+
 
 
 # FUNCTION BASED VIEW **************************************************************************
@@ -38,13 +44,13 @@ def function_based_view(request):
 
 
 
-
+from rest_framework.authtoken.models import Token
 # @csrf_exempt
 @api_view(['GET', 'PUT', 'DELETE'])
 def function_based_view2(request, pkxyz):
     try:
         one_article = ArticleModel1.objects.get(pk=pkxyz)
-        print("eee", one_article)
+        print("one articleeee>>", one_article)
     except ArticleModel1.DoesNotExist:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
@@ -78,7 +84,6 @@ def function_based_view2(request, pkxyz):
 # CLASS BASED VIEW *******************************************************
 # https://stackoverflow.com/questions/14788181/class-based-views-vs-function-based-views
 from rest_framework.views import APIView
-
 
 class ClassBasedView(APIView):
     def get(self, request):
@@ -132,10 +137,16 @@ from rest_framework import generics
 from rest_framework import mixins
 
 
+
 class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     queryset = ArticleModel1.objects.all()
     serializer_class = ArticleSerializer
     lookup_field = 'id'
+
 
     def get(self, request, id=None):
         print ("generic view gett", id)
