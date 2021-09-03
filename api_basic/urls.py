@@ -1,6 +1,11 @@
 from django.conf.urls import url
-from api_basic.views import function_based_view, function_based_view2, ClassBasedView, ClassBasedView2, GenericView
+from api_basic.views import function_based_view, function_based_view2, ClassBasedView, ClassBasedView2, GenericView, ArticleViewSet
 from django.urls import path
+
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'articlevs/', ArticleViewSet, basename='article123')
+urlpatterns = router.urls
 
 
 # TEMPLATE TAGGING

@@ -86,6 +86,10 @@ def function_based_view2(request, pkxyz):
 from rest_framework.views import APIView
 
 class ClassBasedView(APIView):
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         all_articles = ArticleModel1.objects.all()
         articles_list_via_seri = ArticleSerializer(all_articles, many=True)
@@ -101,6 +105,10 @@ class ClassBasedView(APIView):
 
 
 class ClassBasedView2(APIView):
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get_one_object(self, pkxyz):
         try:
             print("wwwwww")
@@ -150,11 +158,11 @@ class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateM
 
     def get(self, request, id=None):
         print ("generic view gett", id)
-        if id:
-            return self.retrieve(request)
-        else:
-            print ("generic view getttttt", id)
-            return self.list(request)
+        return self.retrieve(request)
+        # if id:
+        #     return self.retrieve(request)
+        # else:
+        #     return self.list(request)
 
     def post(self, request, id):
         print ("generic view postt")
@@ -167,6 +175,36 @@ class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateM
     def delete(self, request, id):
         print ("generic view deletee", id)
         return self.destroy(request, id)
+
+
+
+# VIEWSETS *******************************************************
+# ViewSet classes are almost the same thing as View classes, except that they provide operations such as retrieve, or update, and not method handlers such as get or put.
+# combine the logic for a set of related views in a single class, called a ViewSet. In other frameworks you may also find conceptually similar implementations named something like 'Resources' or 'Controllers'.
+
+from rest_framework import viewsets
+class ArticleViewSet(viewsets.ViewSet):
+    def list(self, request):
+        all_articles = ArticleModel1.objects.all()
+        articles_list_via_seri = ArticleSerializer(all_articles, many=True)
+        return Response(articles_list_via_seri.data)
+
+    def create(self, request):
+        postdata_via_seri = ArticleSerializer(data=request.data)
+        if postdata_via_seri.is_valid():
+            postdata_via_seri.save()
+            return Response(postdata_via_seri.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(postdata_via_seri.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        queryset = ArticleModel1.objects.all()
+        # yaha pe ek baar simple try karo
+        one_article = get_object_or_404(queryset, pk=pk)
+        one_article_seri = ArticleSerializer(one_article)
+        return Response(one_article_seri.data)
+
+
 
 
 
