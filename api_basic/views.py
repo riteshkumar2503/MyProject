@@ -5,6 +5,8 @@ from rest_framework.parsers import JSONParser
 from api_basic.models import ArticleModel1
 from api_basic.serializers import ArticleSerializer
 from django.views.decorators.csrf import csrf_exempt
+import json
+
 
 # REST framework provides two wrappers you can use to write API views. The @api_view decorator for working with function based views. The APIView class for working with class-based views.
 from rest_framework.decorators import api_view
@@ -139,18 +141,11 @@ class ClassBasedView2(APIView):
 
 
 # GENERIC VIEWS *******************************************************
-#  ListModelMixin Provides a .list(request, *args, **kwargs) method, that implements listing a queryset. If the queryset is populated, this returns a 200 OK response, with a serialized representation of the queryset as the body of the response. The response data may optionally be paginated.
-# CreateModelMixin Provides a .create(request, *args, **kwargs) method, that implements creating and saving a new model instance
 from rest_framework import generics
 from rest_framework import mixins
 
 
-
 class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
     queryset = ArticleModel1.objects.all()
     serializer_class = ArticleSerializer
     lookup_field = 'id'
@@ -178,18 +173,30 @@ class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateM
 
 
 
+
+
+
+
+
+
+
 # VIEWSETS *******************************************************
 # ViewSet classes are almost the same thing as View classes, except that they provide operations such as retrieve, or update, and not method handlers such as get or put.
 # combine the logic for a set of related views in a single class, called a ViewSet. In other frameworks you may also find conceptually similar implementations named something like 'Resources' or 'Controllers'.
 
 from rest_framework import viewsets
+from django.shortcuts import get_list_or_404, get_object_or_404
+
 class ArticleViewSet(viewsets.ViewSet):
+
     def list(self, request):
+        print("list aka get all>>")
         all_articles = ArticleModel1.objects.all()
         articles_list_via_seri = ArticleSerializer(all_articles, many=True)
         return Response(articles_list_via_seri.data)
 
     def create(self, request):
+        # print("create aka psot>>", dir(request))
         postdata_via_seri = ArticleSerializer(data=request.data)
         if postdata_via_seri.is_valid():
             postdata_via_seri.save()
@@ -198,11 +205,48 @@ class ArticleViewSet(viewsets.ViewSet):
             return Response(postdata_via_seri.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
+        print ("retrieve aka get one via param>>")
         queryset = ArticleModel1.objects.all()
         # yaha pe ek baar simple try karo
         one_article = get_object_or_404(queryset, pk=pk)
         one_article_seri = ArticleSerializer(one_article)
         return Response(one_article_seri.data)
+
+    def update(self, request, pk=None):
+        print ("update11 aka add one via param>>")
+        queryset = ArticleModel1.objects.all()
+        one_article = get_object_or_404(queryset, pk=pk)
+        # direct bhi manga sakte hain neeche wali line ke through..wo jyada better lag raha hai
+        # one_article = ArticleModel1.objects.get(pk=pk)
+        print ("update22>>")
+        one_article_seri = ArticleSerializer(one_article, data=request.data)
+        if one_article_seri.is_valid():
+            one_article_seri.save()
+            return Response(one_article_seri.data)
+        else:
+            return Response(one_article_seri.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# GENERIC VIEWSETS
+# Its like our GenericAPIView. We have to use this with our model mixins
+class ArticleGenericViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
+    # lookup_field = "author"
+    queryset = ArticleModel1.objects.all()
+    print("xxxx", queryset)
+    serializer_class = ArticleSerializer
+
+
+# MODEL VIEWSETS
+class ArticleModelViewSet(viewsets.ModelViewSet):
+    queryset = ArticleModel1.objects.all()
+    print("cccc", queryset)
+    serializer_class = ArticleSerializer
+
+
+
+
+
+
 
 
 

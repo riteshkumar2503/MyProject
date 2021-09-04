@@ -4,7 +4,7 @@ from api_basic.models import ArticleModel1
 
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
-        model= ArticleModel1
+        model = ArticleModel1
         fields = ('id', 'title', 'author',)
         # fields = '__all__'
 
