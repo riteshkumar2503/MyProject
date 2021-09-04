@@ -232,14 +232,14 @@ class ArticleViewSet(viewsets.ViewSet):
 class ArticleGenericViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
     # lookup_field = "author"
     queryset = ArticleModel1.objects.all()
-    print("xxxx", queryset)
+    # print("xxxx", queryset)
     serializer_class = ArticleSerializer
 
 
 # MODEL VIEWSETS
 class ArticleModelViewSet(viewsets.ModelViewSet):
     queryset = ArticleModel1.objects.all()
-    print("cccc", queryset)
+    # print("cccc", queryset)
     serializer_class = ArticleSerializer
 
 
