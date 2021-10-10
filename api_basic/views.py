@@ -7,19 +7,14 @@ from api_basic.serializers import ArticleSerializer
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-
 # REST framework provides two wrappers you can use to write API views. The @api_view decorator for working with function based views. The APIView class for working with class-based views.
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
-
-
 
 
 # FUNCTION BASED VIEW **************************************************************************
@@ -30,14 +25,14 @@ def function_based_view(request):
         all_articles = ArticleModel1.objects.all()
         articles_list_via_seri = ArticleSerializer(all_articles, many=True)
         # return JsonResponse (articles_list_via_seri.data, safe=False)  # In order to serialize objects other than dict you must set the safe parameter to False:
-        return Response (articles_list_via_seri.data)
+        return Response(articles_list_via_seri.data)
 
 
 
     elif request.method == 'POST':
         # data123 = JSONParser().parse(request)
         # postdata_via_seri = ArticleSerializer(data=data123)
-        postdata_via_seri = ArticleSerializer(data=request.data)  #instead of above two lines
+        postdata_via_seri = ArticleSerializer(data=request.data)  # instead of above two lines
         if postdata_via_seri.is_valid():
             postdata_via_seri.save()
             return Response(postdata_via_seri.data, status=status.HTTP_201_CREATED)
@@ -45,8 +40,9 @@ def function_based_view(request):
             return Response(postdata_via_seri.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 from rest_framework.authtoken.models import Token
+
+
 # @csrf_exempt
 @api_view(['GET', 'PUT', 'DELETE'])
 def function_based_view2(request, pkxyz):
@@ -75,17 +71,10 @@ def function_based_view2(request, pkxyz):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
-
-
-
-
-
-
-
 # CLASS BASED VIEW *******************************************************
 # https://stackoverflow.com/questions/14788181/class-based-views-vs-function-based-views
 from rest_framework.views import APIView
+
 
 class ClassBasedView(APIView):
     # authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -95,7 +84,7 @@ class ClassBasedView(APIView):
     def get(self, request):
         all_articles = ArticleModel1.objects.all()
         articles_list_via_seri = ArticleSerializer(all_articles, many=True)
-        return Response (articles_list_via_seri.data)
+        return Response(articles_list_via_seri.data)
 
     def post(self, request):
         postdata_via_seri = ArticleSerializer(data=request.data)
@@ -139,20 +128,19 @@ class ClassBasedView2(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
 # GENERIC VIEWS *******************************************************
 from rest_framework import generics
 from rest_framework import mixins
 
 
-class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
     queryset = ArticleModel1.objects.all()
     serializer_class = ArticleSerializer
     lookup_field = 'id'
 
-
     def get(self, request, id=None):
-        print ("generic view gett", id)
+        print("generic view gett", id)
         return self.retrieve(request)
         # if id:
         #     return self.retrieve(request)
@@ -160,24 +148,16 @@ class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateM
         #     return self.list(request)
 
     def post(self, request, id):
-        print ("generic view postt")
+        print("generic view postt")
         return self.create(request)
 
     def put(self, request, id):
-        print ("generic view putt", id)
+        print("generic view putt", id)
         return self.update(request, id)
 
     def delete(self, request, id):
-        print ("generic view deletee", id)
+        print("generic view deletee", id)
         return self.destroy(request, id)
-
-
-
-
-
-
-
-
 
 
 # VIEWSETS *******************************************************
@@ -186,6 +166,7 @@ class GenericView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateM
 
 from rest_framework import viewsets
 from django.shortcuts import get_list_or_404, get_object_or_404
+
 
 class ArticleViewSet(viewsets.ViewSet):
 
@@ -205,7 +186,7 @@ class ArticleViewSet(viewsets.ViewSet):
             return Response(postdata_via_seri.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        print ("retrieve aka get one via param>>")
+        print("retrieve aka get one via param>>")
         queryset = ArticleModel1.objects.all()
         # yaha pe ek baar simple try karo
         one_article = get_object_or_404(queryset, pk=pk)
@@ -213,12 +194,12 @@ class ArticleViewSet(viewsets.ViewSet):
         return Response(one_article_seri.data)
 
     def update(self, request, pk=None):
-        print ("update11 aka add one via param>>")
+        print("update11 aka add one via param>>")
         queryset = ArticleModel1.objects.all()
         one_article = get_object_or_404(queryset, pk=pk)
         # direct bhi manga sakte hain neeche wali line ke through..wo jyada better lag raha hai
         # one_article = ArticleModel1.objects.get(pk=pk)
-        print ("update22>>")
+        print("update22>>")
         one_article_seri = ArticleSerializer(one_article, data=request.data)
         if one_article_seri.is_valid():
             one_article_seri.save()
@@ -229,44 +210,44 @@ class ArticleViewSet(viewsets.ViewSet):
 
 # GENERIC VIEWSETS
 # Its like our GenericAPIView. We have to use this with our model mixins
-class ArticleGenericViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
+class ArticleGenericViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
+                            mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
     # lookup_field = "author"
     queryset = ArticleModel1.objects.all()
     # print("xxxx", queryset)
     serializer_class = ArticleSerializer
 
 
+
 # MODEL VIEWSETS
 class ArticleModelViewSet(viewsets.ModelViewSet):
-    queryset = ArticleModel1.objects.all()
-    # print("cccc", queryset)
+    queryset = ArticleModel1.objects.all()  # .values('title','author')
+    print("aaaaa>>>>", queryset[0].author, "########", queryset[0].title, "########", type(queryset))
+    queryset_1filter = ArticleModel1.objects.filter(author='fincher')
+    queryset_2filter = ArticleModel1.objects.filter(author='fincher',title='seven')
+    print("queryset_onefilter>>>>", queryset_1filter)
+    print("queryset_twofilter>>>>", queryset_2filter)
+    print("cccccc>>>>", queryset_1filter[0].email)
+    print("dddddd>>>>", queryset_2filter[0].email, "type is>>>>", type(queryset_2filter[0].email))
+    xyz = ArticleModel1.objects.filter(author='fincher').first()
+    print("******ye xyz dikh string raha hai par hai ye queryset being seen by the name the model is returning...agar model return nahi karega to model object dikhaega>>>>", xyz ,"############", type(xyz), "############",xyz.email)
+    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    # Returns a QuerySet that returns dictionaries, rather than model instances, when used as an iterable.
+    queryset_values=ArticleModel1.objects.filter(author='fincher').values()
+    print("queryset valuesssssssssss11111111", queryset_values[0])
+    print("queryset valuesssssssssss22222222", queryset_values[0].get('email'))
+    # The values() method takes optional positional arguments, *fields, which specify field names to which the SELECT should be limited.
+    queryset_values_limited=ArticleModel1.objects.filter(author='fincher').values("title","author")
+    print("queryset valuesssssssssss33333333", queryset_values_limited[0])
+    print("queryset valuesssssssssss44444444", queryset_values_limited[0].get('email'))
+
+    a = 11;
+    if not a:
+        print("hello")
+        add_dict = {"title": "uglyyy", "email": "k@ugly.com"}
+        new_data = ArticleModel1(**add_dict)
+        new_data.save()
+
     serializer_class = ArticleSerializer
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

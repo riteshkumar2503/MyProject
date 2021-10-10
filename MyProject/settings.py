@@ -40,7 +40,9 @@ INSTALLED_APPS = [
 
     'api_basic', # --ritesh
     'rest_framework', # --ritesh
-    'rest_framework.authtoken' # FOR TOKEN AUTHENTICATION --ritesh
+    'rest_framework.authtoken', # FOR TOKEN AUTHENTICATION --ritesh
+    "django_cron",
+
 ]
 
 MIDDLEWARE = [
@@ -142,3 +144,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+
+CRON_CLASSES = (
+    "api_basic.cron1.MyCronJob1",
+    "api_basic.cron1.MyCronJob2",
+    "api_basic.cron1.MyCronJob3",
+    "api_basic.cron1.MyCronJob4",
+)
