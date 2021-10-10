@@ -220,6 +220,7 @@ class ArticleGenericViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixi
 
 
 # MODEL VIEWSETS
+
 class ArticleModelViewSet(viewsets.ModelViewSet):
     queryset = ArticleModel1.objects.all()  # .values('title','author')
     print("aaaaa>>>>", queryset[0].author, "########", queryset[0].title, "########", type(queryset))
